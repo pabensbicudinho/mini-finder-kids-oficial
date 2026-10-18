@@ -1,0 +1,75 @@
+{
+  "expo": {
+    "name": "mini-finder-kids",
+    "slug": "mini-finder-kids",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "Permitir que o MiniFinderKids acesse o microfone para gravar áudios de segurança.",
+        "NSCameraUsageDescription": "Permitir que o MiniFinderKids use a câmera para registrar fotos de segurança.",
+        "NSLocationWhenInUseUsageDescription": "Permitir que o MiniFinderKids acesse sua localização para monitoramento.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Permitir que o MiniFinderKids acesse sua localização em segundo plano para monitoramento contínuo."
+      }
+    },
+    "android": {
+      "package": "com.seunome.minifinderkids",
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "permissions": [
+        "RECORD_AUDIO",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-status-bar",
+      "expo-sqlite",
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Permitir que o MiniFinderKids acesse o microfone para gravar áudios de segurança."
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Permitir que o MiniFinderKids acesse sua localização em segundo plano para monitoramento contínuo.",
+          "locationWhenInUsePermission": "Permitir que o MiniFinderKids acesse sua localização para monitoramento."
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Permitir que o MiniFinderKids use a câmera para registrar fotos de segurança.",
+          "microphonePermission": "Permitir que o MiniFinderKids acesse o microfone para gravar vídeos.",
+          "recordAudioAndroid": true
+        }
+      ],
+      "@react-native-firebase/app"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "6d1f227a-7df7-48ef-b210-c954513105ad"
+      }
+    }
+  }
+}
