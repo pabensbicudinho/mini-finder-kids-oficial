@@ -10,7 +10,6 @@
   "dependencies": {
     "@expo/vector-icons": "^15.0.2",
     "@react-native-async-storage/async-storage": "2.2.0",
-    "@react-native-firebase/app": "^26.4.0",
     "@react-native-firebase/storage": "^26.4.0",
     "expo": "~57.0.30",
     "expo-asset": "~57.0.20",
@@ -20,6 +19,7 @@
     "expo-file-system": "~57.0.7",
     "expo-font": "~57.0.4",
     "expo-location": "~57.0.21",
+    "expo-splash-screen": "~57.0.10",
     "expo-sqlite": "~57.0.4",
     "expo-status-bar": "~57.0.1",
     "firebase": "^13.0.0",
