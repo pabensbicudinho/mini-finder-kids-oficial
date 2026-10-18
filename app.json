@@ -63,8 +63,7 @@
           "microphonePermission": "Permitir que o MiniFinderKids acesse o microfone para gravar vídeos.",
           "recordAudioAndroid": true
         }
-      ],
-      "@react-native-firebase/app"
+      ]
     ],
     "extra": {
       "eas": {
