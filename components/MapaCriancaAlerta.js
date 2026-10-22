@@ -5,7 +5,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { WebView } from 'react-native-webview';
-import * as Location from 'expo-location';
+import { listarLocalizacoes } from '../services/firestoreService'; // Importado para buscar a localização da criança
 
 export default function MapaCriancaAlerta({ userData, onNavigate }) {
   const [location, setLocation] = useState(null);
@@ -14,64 +14,59 @@ export default function MapaCriancaAlerta({ userData, onNavigate }) {
   const webMapRef = useRef(null);
   const webMarkerRef = useRef(null);
   const webMapContainerRef = useRef(null);
+  const webViewRef = useRef(null); // Ref para o WebView Nativo
 
   const nomeCrianca = userData?.nome || 'Criança';
 
   /*
    * ============================================================
-   * LOCALIZAÇÃO
+   * LOCALIZAÇÃO (BUSCA DO FIRESTORE - IGUAL AO MAPA.JS)
    * ============================================================
    */
-
   useEffect(() => {
-    let locationSubscription = null;
+    let intervalId = null;
     let isMounted = true;
 
-    const iniciarLocalizacao = async () => {
+    const buscarLocalizacaoFirestore = async () => {
       try {
-        const { status } = await Location.requestForegroundPermissionsAsync();
-
-        if (status !== 'granted') {
-          if (isMounted) setErrorMsg('Permissão de localização negada.');
-          return;
+        if (!userData?.id || !isMounted) return;
+        
+        // Pega o histórico (o primeiro item é a localização mais recente)
+        const locs = await listarLocalizacoes(userData.id);
+        
+        if (locs && locs.length > 0 && isMounted) {
+          const ultima = locs[0];
+          setLocation({
+            latitude: ultima.latitude,
+            longitude: ultima.longitude,
+          });
+          console.log('📍 MapaAlerta recebeu localização do Firestore:', ultima.latitude, ultima.longitude);
+        } else if (isMounted) {
+          setErrorMsg('Nenhuma localização encontrada para esta criança.');
         }
-
-        const currentLocation = await Location.getCurrentPositionAsync({
-          accuracy: Location.Accuracy.High,
-        });
-
-        if (isMounted) setLocation(currentLocation.coords);
-
-        locationSubscription = await Location.watchPositionAsync(
-          {
-            accuracy: Location.Accuracy.High,
-            timeInterval: 180000,
-            distanceInterval: 10,
-          },
-          (newLocation) => {
-            if (isMounted) setLocation(newLocation.coords);
-          }
-        );
       } catch (error) {
-        console.error('Erro ao obter localização:', error);
-        if (isMounted) setErrorMsg('Não foi possível obter a localização.');
+        console.error('Erro ao buscar localização no Firestore:', error);
+        if (isMounted) setErrorMsg('Erro ao carregar a localização.');
       }
     };
 
-    iniciarLocalizacao();
+    // Busca imediatamente ao abrir a tela
+    buscarLocalizacaoFirestore();
+
+    // E depois atualiza a cada 5 segundos (igual ao Mapa.js)
+    intervalId = setInterval(buscarLocalizacaoFirestore, 5000);
 
     return () => {
       isMounted = false;
-      if (locationSubscription) locationSubscription.remove();
+      if (intervalId) clearInterval(intervalId);
     };
-  }, []);
+  }, [userData]);
 
   /*
    * ============================================================
    * HTML DO MAPA PARA ANDROID / IOS
    * ============================================================
    */
-
   const gerarHTML = (lat, lng, nome) => {
     const nomeSeguro = String(nome)
       .replace(/\\/g, '\\\\')
@@ -130,14 +125,13 @@ export default function MapaCriancaAlerta({ userData, onNavigate }) {
    * ATUALIZA MAPA NATIVO
    * ============================================================
    */
-
   useEffect(() => {
-    if (Platform.OS !== 'web' && location && webMapRef.current) {
+    if (Platform.OS !== 'web' && location && webViewRef.current) {
       const mensagem = JSON.stringify({
         latitude: location.latitude,
         longitude: location.longitude,
       });
-      webMapRef.current.postMessage(mensagem);
+      webViewRef.current.postMessage(mensagem);
     }
   }, [location]);
 
@@ -146,7 +140,6 @@ export default function MapaCriancaAlerta({ userData, onNavigate }) {
    * MAPA WEB
    * ============================================================
    */
-
   useEffect(() => {
     if (Platform.OS !== 'web' || !location || !webMapContainerRef.current) {
       return;
@@ -214,7 +207,6 @@ export default function MapaCriancaAlerta({ userData, onNavigate }) {
    * LIMPEZA DO MAPA WEB
    * ============================================================
    */
-
   useEffect(() => {
     return () => {
       if (webMapRef.current) {
@@ -230,7 +222,6 @@ export default function MapaCriancaAlerta({ userData, onNavigate }) {
    * RENDERIZAÇÃO DO MAPA
    * ============================================================
    */
-
   const renderMapa = () => {
     if (errorMsg) {
       return (
@@ -245,7 +236,7 @@ export default function MapaCriancaAlerta({ userData, onNavigate }) {
       return (
         <View style={styles.mapLoadingContainer}>
           <Ionicons name="navigate-outline" size={36} color="#1E3A8A" />
-          <Text style={styles.mapLoadingText}>Buscando sinal do GPS...</Text>
+          <Text style={styles.mapLoadingText}>Buscando localização da criança...</Text>
         </View>
       );
     }
@@ -253,7 +244,7 @@ export default function MapaCriancaAlerta({ userData, onNavigate }) {
     if (Platform.OS !== 'web') {
       return (
         <WebView
-          ref={webMapRef}
+          ref={webViewRef}
           style={styles.map}
           originWhitelist={['*']}
           source={{ html: gerarHTML(location.latitude, location.longitude, nomeCrianca) }}
@@ -274,7 +265,6 @@ export default function MapaCriancaAlerta({ userData, onNavigate }) {
    * INTERFACE
    * ============================================================
    */
-
   return (
     <SafeAreaView style={styles.container}>
       {/* HEADER */}

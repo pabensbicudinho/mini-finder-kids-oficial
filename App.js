@@ -24,9 +24,6 @@ export default function App() {
   const [previousScreen, setPreviousScreen] = useState('inicio');
   const [loggedUser, setLoggedUser] = useState(null);
   const [selectedChild, setSelectedChild] = useState(null);
-  
-  // 🔑 Não precisamos mais esperar o banco de dados local carregar
-  // O Firebase já está pronto para uso assim que o app abre
 
   const navigateTo = (screen, data = null) => {
     console.log('🟣 navigateTo:', { screen, data: data?.nome || data, currentScreen });
@@ -35,17 +32,14 @@ export default function App() {
       setPreviousScreen(currentScreen);
     }
 
-    // LOGIN → INÍCIO (define o usuário logado)
     if (screen === 'inicio' && data) {
       setLoggedUser(data);
       setSelectedChild(null);
     }
-    // LOGOUT
     else if (screen === 'login') {
       setLoggedUser(null);
       setSelectedChild(null);
     }
-    // CRIANÇA SELECIONADA
     else if (
       screen === 'mapa' ||
       screen === 'perfilCrianca' ||
@@ -65,9 +59,6 @@ export default function App() {
     setCurrentScreen(screen);
   };
 
-  // 🔑 Removemos o `if (!dbReady) return null;` 
-  // O app abre direto na tela de login
-
   return (
     <SafeAreaProvider>
       {/* AUTENTICAÇÃO */}
@@ -86,12 +77,11 @@ export default function App() {
         />
       )}
 
-      {/* TELAS DE CRIANÇA */}
+      {/* 🔑 CORREÇÃO AQUI: Passando o loggedUser para a tela de nova criança */}
       {currentScreen === 'novaCriancas' && (
-        <NovaCrianca onNavigate={navigateTo} />
+        <NovaCrianca userData={loggedUser} onNavigate={navigateTo} />
       )}
       
-      {/* 🔑 Passa o loggedUser para o Mapa */}
       {currentScreen === 'mapa' && (
         <Mapa 
           userData={selectedChild} 
