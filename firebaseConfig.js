@@ -10,15 +10,15 @@ import { getStorage } from "firebase/storage";
 import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-// Cole aqui as configurações que o Firebase te passou
+// ✅ NOVAS CONFIGURAÇÕES DO PROJETO "primeiro-22c60"
 const firebaseConfig = {
-  apiKey: "AIzaSyBqRrIWhgSIWy_N7WCklObX61-ElEJAoMI",
-  authDomain: "teste-2dd65.firebaseapp.com",
-  projectId: "teste-2dd65",
-  storageBucket: "teste-2dd65.firebasestorage.app",
-  messagingSenderId: "1084510629607",
-  appId: "1:1084510629607:web:e8f90b814f1f32dc833c42",
-  measurementId: "G-57C9Y2CKDS"
+  apiKey: "AIzaSyD7JlxFVfm8VrdnLIndN3d4ks8_c5WWOTU",
+  authDomain: "primeiro-22c60.firebaseapp.com",
+  projectId: "primeiro-22c60",
+  storageBucket: "primeiro-22c60.firebasestorage.app",
+  messagingSenderId: "819325176504",
+  appId: "1:819325176504:web:5c68ca167827bd9114824d",
+  measurementId: "G-X4LY1K4J8H"
 };
 
 // Inicializa o Firebase
@@ -28,7 +28,7 @@ const app = initializeApp(firebaseConfig);
 let auth;
 
 if (Platform.OS === 'web') {
-  // 🌐 No navegador, usa o getAuth padrão (persistência local do browser)
+  // 🌐 No navegador, usa o getAuth padrão
   auth = getAuth(app);
 } else {
   // 📱 No APK (Android/iOS), usa AsyncStorage para persistência
